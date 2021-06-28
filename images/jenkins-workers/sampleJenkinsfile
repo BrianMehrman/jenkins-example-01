@@ -1,0 +1,38 @@
+podTemplate(
+    cloud: 'kubernetes',
+    containers: [
+        containerTemplate(name: 'build', image: "bcmehrman/jenkins-worker", ttyEnabled: true, command: 'cat' ),
+        containerTemplate(name: 'run', image: "bcmehrman/deployer:0.0.2", ttyEnabled: true, command: 'cat' ),
+        containerTemplate(name: 'proxy', image: "bcmehrman/kustomize:0.0.1", ttyEnabled: true, command: 'cat' )
+    ],
+    envVars: [containerEnvVar(key: 'DOCKER_HOST', value: 'tcp://dind:2375')],
+    namespace: 'jenkins',
+    serviceAccount: 'jenkins'
+    ) {
+    node(POD_LABEL) {
+       
+        stage('build project') {
+             container('build') {
+                stage("Build image.") {
+                    git url: "${REPO}", branch: "${BRANCH}"
+                    sh(script: """
+                        echo "building..."
+                        docker build -t test -f docker/Dockerfile .
+                    """)
+                }
+            }
+        }
+        stage('deploy image') {
+            container('run') {
+                stage('Deploy image.') {
+                    git url: "${REPO}", branch: "${BRANCH}"
+                    sh(script: """
+                        echo "going to try and deploy now..."
+                        mkdir -p tmp
+                        bash bin/run-app.sh
+                    """)
+                }
+            }
+        }
+    }
+}

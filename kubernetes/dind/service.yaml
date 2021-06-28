@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dind
+  labels:
+    app: dind
+spec:
+  type: ClusterIP
+  ports:
+    - name: dind
+      port: 2375
+      targetPort: 2375
+      protocol: TCP
+  selector:
+    app: dind

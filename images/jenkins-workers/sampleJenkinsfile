@@ -29,7 +29,7 @@ podTemplate(
                     sh(script: """
                         echo "going to try and deploy now..."
                         mkdir -p tmp
-                        bash bin/run-app.sh
+                        FROM_IMAGE="bcmehrman/simple-python-app" RUN_IMAGE=test bash bin/run-app-local.sh
                     """)
                 }
             }

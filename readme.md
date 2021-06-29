@@ -2,12 +2,7 @@
 
 This is an example setup to run Jenkins.
 
-Source: https://www.youtube.com/watch?v=eRWIJGF3Y2g
-
-
-https://github.com/nestybox/sysbox/blob/master/docs/user-guide/install-k8s.md
-
-
+## Overview of setup
 
 1. In jenkins build docker image of app
     1. pull branch
@@ -23,6 +18,16 @@ https://github.com/nestybox/sysbox/blob/master/docs/user-guide/install-k8s.md
 6. If test passed push image up to docker hub
 7. Notify user of build and test results.
 
+## Project dependencies
+
+These are the dependencies this project has. Sorry not everything will have a link
+ * Kind
+ * Kubectl
+ * docker
+
+This jenkins example was built around building and deploying this
+[sample project](https://github.com/BrianMehrman/simple-python-app/tree/jenkins-build-test).
+
 
 ## Launch dependencies
 
@@ -33,9 +38,26 @@ kubectl config set-context --current --namespace=jenkins
 kubectl apply -k kubernetes
 ```
 
-
-## Expose port
-
-```
+## Expose Jenkins locally
 
 ```
+kubectl port-forward service/jenkins 8080:8080 -n jenkins
+```
+
+## Connect to Jenkins pod
+
+Find the pod name using `kubectl get pods`. It will be prefixed with `jenkins`.
+
+For example my pods name was `jenkins-5c497b9b-t57s2`. Replace my pod id with yours.
+
+```
+kubectl exec -it jenkins-5c497b9b-t57s2  -c jenkins bash
+```
+
+## References:
+
+__Main Source__: https://www.youtube.com/watch?v=eRWIJGF3Y2g
+
+* https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/jenkins
+* https://medium.com/vivid-seats-engineering/how-to-kubernetes-pods-as-jenkins-build-agents-a726d3886861
+* https://nieldw.medium.com/curling-the-kubernetes-api-server-d7675cfc398c
